@@ -14,11 +14,24 @@ public class MoveRules {
         int x = pos[0];
         int y = pos[1];
 
-        if (gameBoard.isInBounds(x, y - 1)) moves.add(new int[]{x, y - 1}); // Up
-        if (gameBoard.isInBounds(x, y + 1)) moves.add(new int[]{x, y + 1}); // Down
-        if (gameBoard.isInBounds(x + 1, y)) moves.add(new int[]{x + 1, y}); // Right
-        if (gameBoard.isInBounds(x - 1, y)) moves.add(new int[]{x - 1, y}); // Left
+        if (gameBoard.isInBounds(x, y - 1)) {
+            moves.add(new int[]{x, y - 1});
+            System.out.println("Adding move UP to (" + x + ", " + (y - 1) + ")");
+        }
+        if (gameBoard.isInBounds(x, y + 1)) {
+            moves.add(new int[]{x, y + 1});
+            System.out.println("Adding move DOWN to (" + x + ", " + (y + 1) + ")");
+        }
+        if (gameBoard.isInBounds(x + 1, y)) {
+            moves.add(new int[]{x + 1, y});
+            System.out.println("Adding move RIGHT to (" + (x + 1) + ", " + y + ")");
+        }
+        if (gameBoard.isInBounds(x - 1, y)) {
+            moves.add(new int[]{x - 1, y});
+            System.out.println("Adding move LEFT to (" + (x - 1) + ", " + y + ")");
+        }
 
         return moves;
     }
+
 }

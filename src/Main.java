@@ -2,57 +2,91 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        GameBoard board = new GameBoard(5, 5, 1);
-
-        // إضافة القطع
-        board.addPiece(new Piece(Piece.PieceType.ATTRACTIVE, new int[]{2, 2}));
-        board.addPiece(new Piece(Piece.PieceType.REPULSIVE, new int[]{2, 3}));
-        board.addPiece(new Piece(Piece.PieceType.IRON, new int[]{4, 2}));
-
+        Levels levels = new Levels();
+        GameBoard board = new GameBoard(1);
         Scanner scanner = new Scanner(System.in);
-        while (true) {
-            board.displayBoard();
-            System.out.println("Enter the piece to move (1 for ATTRACTIVE, 2 for REPULSIVE) or 'exit' to quit:");
-            String input = scanner.nextLine();
-            if (input.equalsIgnoreCase("exit")) {
+
+        int currentLevel = 0;
+        boolean gameRunning = true;
+
+        while (gameRunning) {
+            int[][] levelData = levels.getLevel(currentLevel);
+
+            if (levelData == null) {
+                System.out.println("Congratulations! You've completed all levels.");
                 break;
             }
 
-            int pieceChoice;
-            try {
-                pieceChoice = Integer.parseInt(input);
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid input. Try again.");
-                continue;
+            board.initializeLevel(levelData);
+
+            while (true) {
+                board.displayBoard();
+                System.out.println("Enter the piece to move (1 for ATTRACTIVE, 2 for REPULSIVE), 'bfs' to solve with BFS, 'dfs' to solve with DFS, or 'exit' to quit:");
+                String input = scanner.nextLine();
+
+                if (input.equalsIgnoreCase("exit")) {
+                    gameRunning = false;
+                    break;
+                }
+
+                if (input.equalsIgnoreCase("bfs")) {
+                    Solve solver = new Solve(board);
+                    solver.solveWithBFS();
+                    continue;
+                }
+
+
+                if (input.equalsIgnoreCase("dfs")) {
+                    Solve solver = new Solve(board);
+                    solver.solveWithDFS();
+                    continue;
+                }
+
+                int pieceChoice;
+                try {
+                    pieceChoice = Integer.parseInt(input);
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid input. Try again.");
+                    continue;
+                }
+
+                Piece pieceToMove = null;
+                if (pieceChoice == 1) {
+                    pieceToMove = board.getPieces().stream()
+                            .filter(p -> p.getType() == Piece.PieceType.ATTRACTIVE)
+                            .findFirst()
+                            .orElse(null);
+                } else if (pieceChoice == 2) {
+                    pieceToMove = board.getPieces().stream()
+                            .filter(p -> p.getType() == Piece.PieceType.REPULSIVE)
+                            .findFirst()
+                            .orElse(null);
+                }
+
+                if (pieceToMove == null) {
+                    System.out.println("Piece not found. Try again.");
+                    continue;
+                }
+
+                System.out.println("Enter target X coordinate:");
+                int targetX = scanner.nextInt();
+                System.out.println("Enter target Y coordinate:");
+                int targetY = scanner.nextInt();
+                scanner.nextLine();
+
+                board.movePieceTo(pieceToMove, targetX, targetY);
+
+                if (board.checkForWin()) {
+                    currentLevel++;
+                    int[][] nextLevel = levels.getLevel(currentLevel);
+                    if (nextLevel != null) {
+                        board.displayTransition(nextLevel);
+                        break;
+                    }
+                }
+
             }
-
-            Piece pieceToMove = null;
-            if (pieceChoice == 1) {
-                pieceToMove = board.getPieces().stream()
-                        .filter(p -> p.getType() == Piece.PieceType.ATTRACTIVE)
-                        .findFirst()
-                        .orElse(null);
-            } else if (pieceChoice == 2) {
-                pieceToMove = board.getPieces().stream()
-                        .filter(p -> p.getType() == Piece.PieceType.REPULSIVE)
-                        .findFirst()
-                        .orElse(null);
-            }
-
-            if (pieceToMove == null) {
-                System.out.println("Piece not found. Try again.");
-                continue;
-            }
-
-            System.out.println("Enter target X coordinate:");
-            int targetX = scanner.nextInt();
-            System.out.println("Enter target Y coordinate:");
-            int targetY = scanner.nextInt();
-            scanner.nextLine(); // Clear newline
-
-            board.movePieceTo(pieceToMove, targetX, targetY);
         }
-
         scanner.close();
     }
 }
