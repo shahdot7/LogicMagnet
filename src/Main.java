@@ -1,4 +1,4 @@
-import java.util.Scanner;
+import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
@@ -8,6 +8,19 @@ public class Main {
 
         int currentLevel = 0;
         boolean gameRunning = true;
+
+        // تعريف جدول الكلفة
+        Map<String, Integer> costMap = new HashMap<>();
+        // مثال على كلفة الحركات (يمكن تعديلها حسب المطلوب)
+        costMap.put("ATTRACTIVE_[0,1]", 1);
+        costMap.put("ATTRACTIVE_[0,-1]", 1);
+        costMap.put("ATTRACTIVE_[1,0]", 1);
+        costMap.put("ATTRACTIVE_[-1,0]", 1);
+        costMap.put("REPULSIVE_[0,1]", 1);
+        costMap.put("REPULSIVE_[0,-1]", 1);
+        costMap.put("REPULSIVE_[1,0]", 1);
+        costMap.put("REPULSIVE_[-1,0]", 1);
+
 
         while (gameRunning) {
             int[][] levelData = levels.getLevel(currentLevel);
@@ -21,7 +34,7 @@ public class Main {
 
             while (true) {
                 board.displayBoard();
-                System.out.println("Enter the piece to move (1 for ATTRACTIVE, 2 for REPULSIVE), 'bfs' to solve with BFS, 'dfs' to solve with DFS, or 'exit' to quit:");
+                System.out.println("Enter the piece to move (1 for ATTRACTIVE, 2 for REPULSIVE), 'bfs' to solve with BFS, 'dfs' to solve with DFS, 'ucs' to solve with UCS, or 'exit' to quit:");
                 String input = scanner.nextLine();
 
                 if (input.equalsIgnoreCase("exit")) {
@@ -29,16 +42,24 @@ public class Main {
                     break;
                 }
 
+                // حل باستخدام BFS
                 if (input.equalsIgnoreCase("bfs")) {
                     Solve solver = new Solve(board);
                     solver.solveWithBFS();
                     continue;
                 }
 
-
+                // حل باستخدام DFS
                 if (input.equalsIgnoreCase("dfs")) {
                     Solve solver = new Solve(board);
                     solver.solveWithDFS();
+                    continue;
+                }
+
+                // حل باستخدام UCS
+                if (input.equalsIgnoreCase("ucs")) {
+                    Solve solver = new Solve(board);
+                    solver.solveWithUCS(costMap);
                     continue;
                 }
 
@@ -72,7 +93,7 @@ public class Main {
                 int targetX = scanner.nextInt();
                 System.out.println("Enter target Y coordinate:");
                 int targetY = scanner.nextInt();
-                scanner.nextLine();
+                scanner.nextLine(); // استهلاك السطر الفارغ
 
                 board.movePieceTo(pieceToMove, targetX, targetY);
 
@@ -81,7 +102,7 @@ public class Main {
                     int[][] nextLevel = levels.getLevel(currentLevel);
                     if (nextLevel != null) {
                         board.displayTransition(nextLevel);
-                        break;
+                        break; // الانتقال إلى المستوى التالي
                     }
                 }
 

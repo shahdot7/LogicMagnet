@@ -2,18 +2,28 @@ public class Piece {
     public enum PieceType {
         IRON, ATTRACTIVE, REPULSIVE, BLOCKED
     }
+
+    private PieceType type;
+    private int[] position;
+    private int[] previousPosition;
+
+    public Piece(PieceType type, int[] position) {
+        this.type = type;
+        this.position = position;
+    }
+
     @Override
     public Piece clone() {
         return new Piece(this.getType(), this.getPosition().clone());
     }
+
     public int getX() {
-        return this.getPosition()[0];
+        return this.position[0];
     }
 
     public int getY() {
-        return this.getPosition()[1];
+        return this.position[1];
     }
-    private int[] previousPosition;
 
     public void saveCurrentPosition() {
         this.previousPosition = position.clone();
@@ -21,14 +31,6 @@ public class Piece {
 
     public int[] getPreviousPosition() {
         return previousPosition;
-    }
-
-    private PieceType type;
-    private int[] position;
-
-    public Piece(PieceType type, int[] position) {
-        this.type = type;
-        this.position = position;
     }
 
     public PieceType getType() {
